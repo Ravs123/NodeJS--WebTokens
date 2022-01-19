@@ -1,0 +1,60 @@
+<%- include('partials/header'); -%>
+
+<form>
+    <h2>Sign up</h2>
+    <label for="email">Email</label>
+    <input type="text" name="emailvalue" required/>
+    <div class="email error"></div>
+
+    <label for="password">Password</label>
+    <input type="password" name="passwordvalue" required/>
+    <div class="password error"></div>
+
+    <button>Sign Up</button>
+</form>
+
+<!-- here we are writing a script which take the values which are filled in the above html fields and then send them to Database  -->
+<script>
+    const formData  =document.querySelector('form')
+    const emailErr=document.querySelector('.email.error')
+    const passwordErr=document.querySelector('.password.error')
+
+    formData.addEventListener('submit',async(e)=>{
+        e.preventDefault()//this funtion prevents from refreshing the page when form submitted
+        //get the values from the field
+
+    //reset errors : this function remove the warning signs once the user enter's write email/password
+        emailErr.textContent='';
+        passwordErr.textContent='';
+
+        const email=formData.emailvalue.value;
+        const password=formData.passwordvalue.value
+        console.log(email,password)
+        //here we are fetching the data from the front end and send the data to the server/db
+        try {
+            const res= await fetch('/signUp',{
+                method:'POST',
+                body:JSON.stringify({email,password}),
+                headers:{'Content-Type':'application/json'}
+            })
+            const data =await res.json();
+            console.log(data)
+            if(data.errors){
+                emailErr.textContent=data.errors.email;
+                passwordErr.textContent=data.errors.password
+            }
+            if(data.userSignup){//here we are redirecting to the home page once we successfully signUp
+                location.assign('/')
+            }
+            
+        } catch (err) {
+            console.log(err)
+        }
+
+
+    })
+</script>
+
+
+
+<%- include('partials/footer'); -%>
